@@ -31,6 +31,7 @@ This script will:
 3. upload parts
 4. complete the multipart upload
 
+
     sh s3_mpupload.sh -p your_AWS_profile -b your_s3_bucket -k your_file_to_upload -s part_size_in_mb
 
 Example:
