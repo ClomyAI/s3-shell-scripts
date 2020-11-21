@@ -1,6 +1,9 @@
 # S3 Shell Scripts
  
-S3 Shell Scripts projects created by Cloudemy.
+S3 Shell Scripts projects created by Cloudemy (http://clooudemy.tv).
+
+
+#### Learn more about AWS and Cloud on Youtube: [Cloudemy TV](http://youtube.cloudemy.tv) http://youtube.cloudemy.tv
 
 ## Prerequisite 
 
