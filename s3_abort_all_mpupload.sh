@@ -23,12 +23,15 @@ then
    helpFunc
 fi
 
-UPLOADS=$(aws --profile $PROFILE s3api list-multipart-uploads --bucket $BUCKET | jq '.Uploads') # AWS Cli list all multipart uploads for the bucket
+# AWS Cli list all multipart uploads for the bucket
+UPLOADS=$(aws --profile $PROFILE s3api list-multipart-uploads --bucket $BUCKET | jq '.Uploads') 
 
 for u in $(echo $UPLOADS | jq -c '.[]') # jq -c get rid of extra lines
 do
    uid=$(echo $u | jq -r '.UploadId') # jq -r get rid of extra quotes
    key=$(echo $u | jq -r '.Key')
    # echo $uid $key
-   aws s3api --profile $PROFILE abort-multipart-upload --bucket $BUCKET --key $key --upload-id $uid # AWS Cli abort multipart upload for the key in the bucket
+
+   # AWS Cli abort multipart upload for the key in the bucket
+   aws s3api --profile $PROFILE abort-multipart-upload --bucket $BUCKET --key $key --upload-id $uid 
 done
