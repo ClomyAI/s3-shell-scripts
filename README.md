@@ -31,6 +31,7 @@ This script will:
 3. upload parts
 4. complete the multipart upload
 
+Command:
 
     sh s3_mpupload.sh -p your_AWS_profile -b your_s3_bucket -k your_file_to_upload -s part_size_in_mb
 
@@ -48,5 +49,10 @@ This command will remove all incomplete multipart uploads.
 
 As a best practice, AWS recommends you configure a lifecycle rule (using the AbortIncompleteMultipartUpload action) to minimize your storage costs.
 
+Command:
+
     sh s3_abort_all_mpupload.sh -p your_AWS_profile -b your_s3_bucket
 
+Example:
+
+    sh s3_mpupload.sh -p john -b cloudemy-bucket
