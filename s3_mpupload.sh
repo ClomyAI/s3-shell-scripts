@@ -29,14 +29,13 @@ fi
 
 # get UploadID from json, need jq - brew install jq
 # AWS Cli - Initiate the multipart upload
-UPLOAD_ID=$(aws s3api --profile $PROFILE create-multipart-upload --bucket $BUCKET --key $KEY | jq -r '.UploadId') 
+UPLOAD_ID=$(aws s3api --profile $PROFILE create-multipart-upload --bucket $BUCKET --key $KEY | jq -r '.UploadId') #jq -r for “raw-output”, no quotes around values
 # echo $UPLOAD_ID
 
 DIR="PART_$(date +%s)"
 mkdir $DIR
 split -b $SIZE $KEY $DIR/ # create part files in temp directory
 i=0
-PART_JSON='{ "Parts": []}'
 
 for file in $(ls $DIR) # list all part files
 do
@@ -46,18 +45,17 @@ do
   
   # AWS Cli - Upload parts to S3, keep the ETag
   ETAG=$(aws --profile $PROFILE s3api upload-part --bucket $BUCKET --key $KEY --part-number $i --body $DIR/$file --upload-id $UPLOAD_ID --content-md5 $MD5 | jq -r '.ETag')
-  
   echo "Part number $i is complete, ETag is $ETAG"
-  # Preparing the JSON required for completing uploads
-  PART_JSON=$(echo $PART_JSON | jq --arg i $i --arg ETAG $ETAG '.Parts += [{"PartNumber": $i|tonumber, "ETag": $ETAG }]') # use tonumber to parse string to integer
+  
 done
+
+# List parts that have been uploaded and preparing the JSON required for completing uploads
+PART_JSON=$(aws --profile $PROFILE s3api list-parts --bucket $BUCKET --key $KEY --upload-id $UPLOAD_ID | jq '.Parts')
+PART_JSON=$(echo $PART_JSON | jq '{"Parts": map({"PartNumber": .PartNumber, "ETag": .ETag})}')
 
 echo $PART_JSON > $DIR/part.json # create JSON file of uploaded parts
 
 # AWS Cli - complete upload
 aws s3api --profile $PROFILE complete-multipart-upload --multipart-upload file://$DIR/part.json --bucket $BUCKET --key $KEY --upload-id $UPLOAD_ID
 
-rm -r $DIR
-
-
-
+# rm -r $DIR
