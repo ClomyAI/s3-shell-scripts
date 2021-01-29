@@ -34,7 +34,7 @@ UPLOAD_ID=$(aws s3api --profile $PROFILE create-multipart-upload --bucket $BUCKE
 
 DIR="PART_$(date +%s)"
 mkdir $DIR
-split -b $SIZE $KEY $DIR/ # create part files in temp directory
+split -a 4 -b $SIZE $KEY $DIR/ # create part files in temp directory
 i=0
 # PART_JSON='{ "Parts": []}'
 
@@ -67,4 +67,3 @@ echo $PART_JSON > $DIR/part.json # create JSON file of uploaded parts
 aws s3api --profile $PROFILE complete-multipart-upload --multipart-upload file://$DIR/part.json --bucket $BUCKET --key $KEY --upload-id $UPLOAD_ID
 
 # rm -r $DIR
-
